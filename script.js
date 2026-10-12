@@ -584,7 +584,7 @@ float caustic(vec2 uv, float time){
   }
   c /= 5.0;
   c = 1.17 - pow(c, 1.4);
-  return clamp(pow(abs(c), 8.0), 0.0, 1.0);
+  return clamp(pow(abs(c), 10.0), 0.0, 1.0);
 }
 void main(){
   vec2 frag = gl_FragCoord.xy;
@@ -595,19 +595,21 @@ void main(){
   // cover-fit the photo, zoomed in a little so its edges never show
   vec2 r = u_res / u_img; float s = max(r.x, r.y);
   vec2 uv = (frag - 0.5 * u_res) / (u_img * s);
-  uv = uv * 0.82 + 0.5; uv.y = 1.0 - uv.y;
-  uv += vec2(sin(t * 0.07), cos(t * 0.05)) * 0.025;
+  uv = uv * 0.9 + 0.5; uv.y = 1.0 - uv.y;
+  uv += vec2(sin(t * 0.07), cos(t * 0.05)) * 0.012;
   // pool-surface wobble
   vec2 w = vec2(sin(q.y * 9.0 + t * 1.1) + sin((q.x + q.y) * 6.0 - t * 0.8),
                 cos(q.x * 8.0 - t * 0.9) + sin((q.x - q.y) * 7.0 + t * 0.6));
   uv += w * 0.0065;
   vec3 col = texture2D(u_tex, uv).rgb;
+  vec2 px = 1.25 / u_img;
+  vec3 blur = (texture2D(u_tex, uv + vec2(px.x, 0.0)).rgb + texture2D(u_tex, uv - vec2(px.x, 0.0)).rgb
+             + texture2D(u_tex, uv + vec2(0.0, px.y)).rgb + texture2D(u_tex, uv - vec2(0.0, px.y)).rgb) * 0.25;
+  col = clamp(col + (col - blur) * 0.9, 0.0, 1.0);
   // sunlit caustics
   float c = caustic(q * 2.0 + w * 0.05, t * 0.6);
-  float c2 = caustic(q * 2.0 + w * 0.05 + 0.004, t * 0.6 + 0.05);
   vec3 butter = vec3(0.957, 0.925, 0.761);
-  col = mix(col, butter, c * 0.62);
-  col += butter * c2 * 0.12;
+  col = mix(col, butter, c * 0.66);
   gl_FragColor = vec4(col, 1.0);
 }`;
   const sh = (type, src) => { const o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o); return gl.getShaderParameter(o, gl.COMPILE_STATUS) ? o : null; };
@@ -640,8 +642,8 @@ void main(){
     host.insertBefore(cv, host.firstChild);
     host.classList.add("gl");
     const resize = () => {
-      // rendered below screen resolution: the photo is soft anyway and it keeps the GPU cool
-      const k = Math.min(devicePixelRatio || 1, 1.5) * .6;
+      // full screen sharpness (capped at 2x so very dense screens don't overwork the GPU)
+      const k = Math.min(devicePixelRatio || 1, 2);
       cv.width = Math.max(1, Math.round(innerWidth * k));
       cv.height = Math.max(1, Math.round(innerHeight * k));
       gl.viewport(0, 0, cv.width, cv.height);
