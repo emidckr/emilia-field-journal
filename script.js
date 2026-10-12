@@ -558,12 +558,113 @@ function initRowPreview() {
   (function loop() { px += (x - px) * .15; py += (y - py) * .15; pv.style.left = px + "px"; pv.style.top = py + "px"; requestAnimationFrame(loop); })();
 }
 
+/* ---------------- pool-water background ---------------- */
+// The satin photo is drawn through a small WebGL shader: the image ripples like a
+// pool floor seen through moving water, and a net of sunlit caustic lines (butter
+// yellow from the palette) drifts across it. Falls back to the CSS drift version
+// when WebGL is missing or the visitor prefers reduced motion.
+function initWater() {
+  if (reduceMotion) return;
+  const host = $(".satin");
+  const cv = document.createElement("canvas");
+  cv.className = "satin-gl";
+  const gl = cv.getContext("webgl", { alpha: false, antialias: false, depth: false, powerPreference: "low-power" });
+  if (!gl) return;
+  const vs = "attribute vec2 a;void main(){gl_Position=vec4(a,0.0,1.0);}";
+  const fs = `precision mediump float;
+uniform sampler2D u_tex; uniform vec2 u_res; uniform vec2 u_img; uniform float u_t;
+#define TAU 6.28318530718
+float caustic(vec2 uv, float time){
+  vec2 p = uv * TAU - 250.0;
+  vec2 i = p; float c = 1.0; float inten = 0.005;
+  for (int n = 0; n < 5; n++) {
+    float t = time * (1.0 - (3.5 / float(n + 1)));
+    i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));
+    c += 1.0 / length(vec2(p.x / (sin(i.x + t) / inten), p.y / (cos(i.y + t) / inten)));
+  }
+  c /= 5.0;
+  c = 1.17 - pow(c, 1.4);
+  return clamp(pow(abs(c), 8.0), 0.0, 1.0);
+}
+void main(){
+  vec2 frag = gl_FragCoord.xy;
+  vec2 st = frag / u_res;
+  float aspect = u_res.x / u_res.y;
+  vec2 q = vec2(st.x * aspect, st.y);
+  float t = u_t;
+  // cover-fit the photo, zoomed in a little so its edges never show
+  vec2 r = u_res / u_img; float s = max(r.x, r.y);
+  vec2 uv = (frag - 0.5 * u_res) / (u_img * s);
+  uv = uv * 0.82 + 0.5; uv.y = 1.0 - uv.y;
+  uv += vec2(sin(t * 0.07), cos(t * 0.05)) * 0.025;
+  // pool-surface wobble
+  vec2 w = vec2(sin(q.y * 9.0 + t * 1.1) + sin((q.x + q.y) * 6.0 - t * 0.8),
+                cos(q.x * 8.0 - t * 0.9) + sin((q.x - q.y) * 7.0 + t * 0.6));
+  uv += w * 0.0065;
+  vec3 col = texture2D(u_tex, uv).rgb;
+  // sunlit caustics
+  float c = caustic(q * 2.0 + w * 0.05, t * 0.6);
+  float c2 = caustic(q * 2.0 + w * 0.05 + 0.004, t * 0.6 + 0.05);
+  vec3 butter = vec3(0.957, 0.925, 0.761);
+  col = mix(col, butter, c * 0.62);
+  col += butter * c2 * 0.12;
+  gl_FragColor = vec4(col, 1.0);
+}`;
+  const sh = (type, src) => { const o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o); return gl.getShaderParameter(o, gl.COMPILE_STATUS) ? o : null; };
+  const v = sh(gl.VERTEX_SHADER, vs), f = sh(gl.FRAGMENT_SHADER, fs);
+  if (!v || !f) return;
+  const prog = gl.createProgram();
+  gl.attachShader(prog, v); gl.attachShader(prog, f); gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
+  gl.useProgram(prog);
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, "a");
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  const uRes = gl.getUniformLocation(prog, "u_res"), uImg = gl.getUniformLocation(prog, "u_img"), uT = gl.getUniformLocation(prog, "u_t");
+
+  const img = new Image();
+  img.decoding = "async";
+  img.src = "assets/bg/satin.webp";
+  img.onload = () => {
+    const tex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
+    gl.uniform2f(uImg, img.naturalWidth, img.naturalHeight);
+    host.insertBefore(cv, host.firstChild);
+    host.classList.add("gl");
+    const resize = () => {
+      // rendered below screen resolution: the photo is soft anyway and it keeps the GPU cool
+      const k = Math.min(devicePixelRatio || 1, 1.5) * .6;
+      cv.width = Math.max(1, Math.round(innerWidth * k));
+      cv.height = Math.max(1, Math.round(innerHeight * k));
+      gl.viewport(0, 0, cv.width, cv.height);
+      gl.uniform2f(uRes, cv.width, cv.height);
+    };
+    resize();
+    addEventListener("resize", resize);
+    const start = performance.now();
+    (function frame(now) {
+      gl.uniform1f(uT, (now - start) / 1000 * .55);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      requestAnimationFrame(frame);
+    })(start);
+  };
+}
+
 /* ---------------- boot ---------------- */
 buildNav();
 buildFan();
 buildRows();
 buildMarquee();
 SESSIONS.forEach(buildSession);
+initWater();
 initCursor();
 initRotator();
 initRowPreview();

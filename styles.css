@@ -95,6 +95,8 @@ img { max-width: 100%; }
 .satin-a { animation: satinA 30s cubic-bezier(.45, 0, .55, 1) infinite alternate; }
 .satin-b { opacity: .38; transform: scaleX(-1); animation: satinB 41s cubic-bezier(.45, 0, .55, 1) infinite alternate; }
 .satin::after { content: ""; position: absolute; inset: 0; background: color-mix(in srgb, var(--cocoa) 40%, transparent); }
+.satin-gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.satin.gl .satin-a, .satin.gl .satin-b { display: none; }
 @keyframes satinA {
   0%   { transform: translate(-3%, -2%) scale(1) rotate(-1.5deg); }
   50%  { transform: translate(2.5%, 1.5%) scale(1.06) rotate(1deg); }
