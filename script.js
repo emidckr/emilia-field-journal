@@ -108,12 +108,117 @@ const SESSIONS = [
       }
     ]
   }
-  // Next guest session goes here: { id: "...", no: "02", ... }
+  ,{
+    id: "ai-team",
+    no: "02",
+    title: "AI Marketing Team",
+    titleHtml: "AI|<em>Marketing</em>|Team",
+    speaker: "Yellow Pages",
+    people: "Nick Goh",
+    date: "30 Oct 2026",
+    color: "#F4ECC2",
+    hex: "F4ECC2",
+    tools: "Claude Projects and Skills, scheduled tasks, Gmail, SOMIN, Higgsfield, ChatGPT",
+    quote: "New chat, fresh eyes.",
+    polaroids: ["kiwi-1", "raspberries"],
+    lede: "Nick Goh, CMO of Yellow Pages Singapore, showed how to build a <em>marketing team out of AI agents</em> in Claude: one skill per role, a shared Project as the team’s memory, and a human who approves every handoff. The worked example was a fictional Louis Vuitton bag launch called Terra.",
+    keepers: [
+      { tag: "Team", title: "Six agents, two teams",
+        text: "The <b>planning team</b> is a Brief Writer, a Brief Validator and a Strategist. The <b>production team</b> is a Designer / Art Director, a Copywriter and a Reviewer. Each one is a <b>Claude Skill</b> with one job and one output." },
+      { tag: "Chain", title: "The handoff chain",
+        text: "Brief Writer drafts → Brief Validator checks it → Strategist shapes the Big Idea → <b>you approve</b> and save it to the knowledge base → Designer and Copywriter produce → Reviewer checks brand voice. The human sits in the middle on purpose." },
+      { tag: "Setup", title: "A Project is the team’s memory",
+        text: "One <b>Claude Project</b> holds the shared context (brief, brand guide, research: 28 files), instructions and memory. A <b>scheduled task</b> runs daily, finds the latest email labelled “Marketing Brief” and runs the Brief Builder on it." },
+      { tag: "Validate", title: "New chat, fresh eyes",
+        text: "The Validator critiques the brief in a <b>fresh chat</b>, checking objective, audience, message and metric, then gives a verdict and top fixes. Missing inputs stay marked <b>[to confirm]</b>; nothing is invented." },
+      { tag: "Strategy", title: "From insight to Big Idea",
+        text: "Research on social data found the hidden motivation: <b>she doesn’t want a sustainable bag; she wants a bag she never has to justify.</b> The Big Idea: <b>Nothing to Explain</b> (stance), <b>The Art of Renewal</b> (visual territory), <b>Made to Be Kept</b> (proof pillar)." },
+      { tag: "Guardrails", title: "AI keeps you honest",
+        text: "Green claims stay <b>[to verify]</b> until substantiated, and a Governance check tests copy against Singapore’s advertising code. Claude <b>refused to face-swap a real ambassador</b> or fake an official LV ad, even for a class." },
+      { tag: "Score", title: "Score the creative",
+        text: "The Creative Review Scorer rates work through <b>BBH, Ogilvy and McCann</b> lenses. A generic desert post scored 4.3, the 3-frame Story 5.7, and a hand on the clasp 6.7: <b>put the idea in the picture</b>, not only in the headline." }
+    ],
+    box: {
+      tag: "Toolkit", title: "The <em>toolkit</em>",
+      items: [
+        { file: "Projects", text: "Shared context, instructions, memory and scheduled tasks for the whole team." },
+        { file: "Skills", text: "Brief Builder, Brief Validator, Researcher Strategist, Messaging Hierarchy, KV Concepts, Creative Review Scorer, Governance Check." },
+        { file: "Connectors", text: "Gmail for the email trigger, SOMIN for social data, Higgsfield for key visuals and Cinema Studio video." }
+      ]
+    },
+    games: [
+      {
+        type: "sort", label: "Staff the team",
+        title: "Staff the <em>team</em>",
+        intro: "Each card is a job. Send it to the agent who does it.",
+        bins: [
+          { name: "Brief Writer", group: "Planning" },
+          { name: "Brief Validator", group: "Planning" },
+          { name: "Strategist", group: "Planning" },
+          { name: "Designer / Art Director", group: "Production" },
+          { name: "Copywriter", group: "Production" },
+          { name: "Reviewer", group: "Production" }
+        ],
+        items: [
+          { t: "Drafts the brief from the Project context", a: 0 },
+          { t: "Needs the goal, audience, budget and timing", a: 0 },
+          { t: "Critiques the brief in a fresh chat", a: 1 },
+          { t: "Returns a verdict and the top fixes", a: 1 },
+          { t: "Digests the validated brief", a: 2 },
+          { t: "Develops the Big Idea one-pager", a: 2 },
+          { t: "Creates the key visuals", a: 3 },
+          { t: "Uses connectors such as Higgsfield", a: 3 },
+          { t: "Builds the messaging hierarchy", a: 4 },
+          { t: "Adapts the copy per channel and platform", a: 4 },
+          { t: "Checks the work against the brand voice", a: 5 },
+          { t: "Confirms it delivers the brief and Big Idea, then signs off", a: 5 }
+        ]
+      },
+      {
+        type: "spot", label: "Validate the brief",
+        title: "Validate the <em>brief</em>",
+        intro: "You’re the Brief Validator, in a fresh chat. Flag every line that needs fixing, then submit your verdict.",
+        doc: "Draft brief · Louis Vuitton Terra · Singapore social launch (fictional)",
+        lines: [
+          { t: "Objective: make Terra famous on social.", bad: true, why: "Vague: no measurable goal. The revised brief made boutique enquiries the primary objective with a number attached." },
+          { t: "Primary objective: consideration — 300 attributable boutique appointment or enquiry actions.", bad: false, why: "Specific, measurable and tied to what matters for 1,000 bags at S$5,800." },
+          { t: "Audience: everyone who likes luxury.", bad: true, why: "Too broad to plan media or messaging against." },
+          { t: "Primary audience: “The Conscious Luxury Consumer”, mostly women 30–50 in Singapore.", bad: false, why: "A defined segment with age, market and values." },
+          { t: "Headline: “The greenest Louis Vuitton bag ever made.”", bad: true, why: "An unverified environmental claim. Terra’s green credentials must be substantiated before any ad runs." },
+          { t: "Environmental credentials are hypothetical and must be substantiated before any ad is published.", bad: false, why: "Exactly the guardrail the brief needs." },
+          { t: "Awareness target: reach 1 million unique users in Singapore.", bad: true, why: "Flagged in the session as too high for Singapore’s affluent, targetable audience; restate it as a share of the audience." },
+          { t: "Budget split across platforms: [to confirm].", bad: false, why: "Marking a missing input beats inventing a number." },
+          { t: "Key visual: put the ambassador’s real face on the AI model so it feels official.", bad: true, why: "Using a real person’s likeness without consent and implying an official ad: Claude refused to do this." }
+        ]
+      },
+      {
+        type: "score", label: "Score the creative",
+        title: "Score the <em>creative</em>",
+        intro: "The Creative Review Scorer rates work through three agency lenses. Guess its overall score for each execution from the session.",
+        items: [
+          { name: "Instagram feed post", score: 4.3, lenses: [4, 4, 5],
+            desc: "One full-length desert image, headline “Nothing to explain.” Caption: Terra is designed and made with the craft the Maison has refined since 1854. Ends “Discover Terra at the link in bio”, with hashtags and alt text.",
+            strength: "Restrained caption, no environmental claim, alt text and a clear next step.",
+            weakness: "A generic luxury-in-the-desert image: nothing in it shows why Terra needs no explanation, and placeholder tags make it look unfinished." },
+          { name: "Instagram Story, 3 frames", score: 5.7, lenses: [5, 6, 6],
+            desc: "Frame 1: wide desert dunes, “Nothing to explain.” Frame 2: close-up of the bag, “Terra. Louis Vuitton craft, since 1854.” Frame 3: a tighter wide shot, “Discover Terra.”",
+            strength: "Follows the hierarchy: object first, then craft, then a soft invitation. The close-up frame is the proof of craft.",
+            weakness: "The desert-safari setting is where LV already over-indexes, and frames 1 and 3 are near-duplicates." },
+          { name: "Hand on the clasp", score: 6.7, lenses: [6, 7, 7],
+            desc: "A mid-close crop: fingertips on the leaf-shaped lock of the denim bag, saddle leather and shutter light falling across a table.",
+            strength: "The moment just before she opens the bag carries desire and anticipation, and works as an invitation with no claim or caption needed.",
+            weakness: "A hand on a lock is a known beauty trope, so it’s more refined than surprising." }
+        ],
+        lesson: "The highest score went to the frame where the idea is <b>in the picture</b>, not only in the headline."
+      }
+    ]
+  }
+  // Next guest session goes here: { id: "...", no: "03", ... }
 ];
 
 
 const UPCOMING = 2;   // empty swatches shown after the real sessions
-const PLACEHOLDER_COLORS = ["var(--butter)", "var(--blush)", "var(--sceptre)"];
+const PLACEHOLDER_COLORS = ["var(--blush)", "var(--sceptre)", "var(--butter)"];
 const NUMBER_WORDS = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"];
 const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
 const STICKER_FILES = ["dice", "fish-1", "fish-2", "fish-3", "flower", "kiwi-1", "kiwi-2", "lips", "raspberries", "star"].map(n => `assets/cursor/${n}.png`);
@@ -173,7 +278,7 @@ function buildRows() {
 
 function buildMarquee() {
   const fill = (el, words) => { const run = words.map(w => `<span>${w}</span><i>✦</i>`).join(""); el.innerHTML = run + run; };
-  fill($("#marquee"), ["Vibe coding", "Claude Design", "Claude Code", "GitHub", "Vercel", "Supabase", "Group D", "More sessions soon"]);
+  fill($("#marquee"), ["Vibe coding", "Claude Design", "Claude Code", "GitHub", "Vercel", "AI agents", "Claude Skills", "Higgsfield", "Group D", "More sessions soon"]);
   fill($("#marquee2"), ["Issue #01", "field journal", "Group D", "pick a swatch", "ESSEC MMD", "play the games"]);
 }
 
@@ -185,6 +290,9 @@ function buildSession(s) {
   sec.hidden = true;
   const slices = Array.from({ length: 7 }, (_, i) => `<div class="slice" style="--i:${i}"></div>`).join("");
   const [t1, ...tRest] = s.titleHtml.split(" ");
+  const titleLines = s.titleHtml.includes("|") ? s.titleHtml.split("|") : [t1, tRest.join(" ")];
+  const [polA, polB] = s.polaroids || ["lips", "star"];
+  const box = s.box || (s.files ? { tag: "Files", title: "Three files to <em>remember</em>", items: s.files } : null);
   const word = NUMBER_WORDS[parseInt(s.no, 10)] || s.no;
   sec.innerHTML = `
     <section class="block paper spread-block">
@@ -194,14 +302,14 @@ function buildSession(s) {
           <span class="run pixel">Emilia's Field Journal</span>
           <p class="eyebrow pixel">Session ${s.no} · ${s.date} · Guest: ${s.speaker}</p>
           <p class="kicker display">Session <em>${word}</em></p>
-          <h1 class="display mask enter s-title"><span class="line"><span>${t1}</span></span><span class="line"><span>${tRest.join(" ")}</span></span></h1>
+          <h1 class="display mask enter s-title${titleLines.length > 2 ? " s-title-3" : ""}">${titleLines.map(l => `<span class="line"><span>${l}</span></span>`).join("")}</h1>
           <p class="speaker">With <b>${s.people}</b> from ${s.speaker}.</p>
           <div class="slices" aria-hidden="true">${slices}</div>
         </article>
         <article class="pg pg-r">
           <span class="folio pixel">p. 005</span>
           <span class="run pixel">Issue #01 · ${s.speaker}</span>
-          <figure class="polaroid pol-s1" aria-hidden="true"><span class="tape"></span><div class="pol-img cerulean-bg"><img src="assets/cursor/lips.png" alt=""></div><figcaption class="pixel">fig. 03</figcaption></figure>
+          <figure class="polaroid pol-s1" aria-hidden="true"><span class="tape"></span><div class="pol-img cerulean-bg"><img src="assets/cursor/${polA}.png" alt=""></div><figcaption class="pixel">fig. 03</figcaption></figure>
           <div class="pink" data-reveal>
             ${s.quote ? `<p class="vquote pixel">“${s.quote}”</p>` : ""}
             <div>
@@ -214,7 +322,7 @@ function buildSession(s) {
               </dl>
             </div>
           </div>
-          <figure class="polaroid pol-s2" aria-hidden="true"><span class="tape"></span><div class="pol-img butter-bg"><img src="assets/cursor/star.png" alt=""></div><figcaption class="pixel">fig. 04</figcaption></figure>
+          <figure class="polaroid pol-s2" aria-hidden="true"><span class="tape"></span><div class="pol-img butter-bg"><img src="assets/cursor/${polB}.png" alt=""></div><figcaption class="pixel">fig. 04</figcaption></figure>
         </article>
       </div>
     </section>
@@ -230,10 +338,10 @@ function buildSession(s) {
           <span class="k-tag pixel"><i class="k-chip"></i>${pad(i + 1)} — ${k.tag}</span>
           <h3>${k.title}</h3><p>${k.text}</p></li>`).join("")}
       </ol>
-      ${s.files ? `<aside class="files-box" data-reveal><span class="tape"></span>
-        <p class="pixel small" style="margin:0 0 10px">${pad(s.keepers.length + 1)} — Files</p>
-        <h3>Three files to <em>remember</em></h3>
-        <div class="trio">${s.files.map(f => `<div><code>${f.file}</code><span>${f.text}</span></div>`).join("")}</div></aside>` : ""}
+      ${box ? `<aside class="files-box" data-reveal><span class="tape"></span>
+        <p class="pixel small" style="margin:0 0 10px">${pad(s.keepers.length + 1)} — ${box.tag}</p>
+        <h3>${box.title}</h3>
+        <div class="trio">${box.items.map(f => `<div><code>${f.file}</code><span>${f.text}</span></div>`).join("")}</div></aside>` : ""}
     </section>
 
     <section class="block cerulean games" id="${s.id}-games">
@@ -261,7 +369,7 @@ function buildSession(s) {
     tabs.forEach((t, j) => t.setAttribute("aria-selected", String(i === j)));
     const g = s.games[i];
     const key = `ej-best-${s.id}-${i}`;
-    ({ order: gameOrder, match: gameMatch, quiz: gameQuiz })[g.type](stage, g, key);
+    ({ order: gameOrder, match: gameMatch, quiz: gameQuiz, sort: gameSort, spot: gameSpot, score: gameScore })[g.type](stage, g, key);
   };
   tabs.forEach((t, i) => t.addEventListener("click", () => open(i)));
   open(0);
@@ -408,6 +516,139 @@ function armReveals(root) {
     el.style.setProperty("--d", `${Math.min(i, 6) * 90}ms`);
     if (el.getBoundingClientRect().top > innerHeight * .92) { el.classList.add("pre"); revealer.observe(el); }
   });
+}
+
+/* ---------------- games added for session 02 ---------------- */
+// "sort": one job card at a time, send it to the right desk.
+function gameSort(stage, g, key) {
+  let idx = 0, mistakes = 0;
+  const best = store.get(key);
+  const deck = shuffle(g.items);
+  const filed = g.bins.map(() => 0);
+  const totals = g.bins.map((_, b) => g.items.filter(it => it.a === b).length);
+  stage.innerHTML = head(g, `<span>Mistakes <b id="sm">0</b></span><span>Card <b id="sc">1/${deck.length}</b></span><span>Best <b>${best == null ? "—" : best + " mistakes"}</b></span>`) +
+    `<div class="stage-body"><div class="sorter">
+      <div class="sort-card-wrap"><h4 class="pixel">The job</h4><div class="sort-card" aria-live="polite"></div><p class="sort-hint" aria-live="polite"></p></div>
+      <div class="desks">${["Planning", "Production"].map(grp => `<div class="desk-group"><h4 class="pixel">${grp} team</h4>
+        ${g.bins.map((b, i) => b.group === grp ? `<button class="desk" data-b="${i}" data-cursor="Send"><span class="desk-name">${b.name}</span><span class="desk-count pixel">0/${totals[i]}</span></button>` : "").join("")}</div>`).join("")}
+      </div></div></div>`;
+  const card = $(".sort-card", stage), hint = $(".sort-hint", stage);
+  const show = () => { card.textContent = deck[idx].t; card.classList.remove("fly"); void card.offsetWidth; card.classList.add("deal"); $("#sc", stage).textContent = `${idx + 1}/${deck.length}`; };
+  show();
+  $$(".desk", stage).forEach(d => d.addEventListener("click", (e) => {
+    const b = +d.dataset.b;
+    if (b === deck[idx].a) {
+      filed[b]++;
+      d.querySelector(".desk-count").textContent = `${filed[b]}/${totals[b]}`;
+      d.classList.remove("hit"); void d.offsetWidth; d.classList.add("hit");
+      if (filed[b] === totals[b]) d.classList.add("full");
+      hint.textContent = "";
+      burst(e.clientX, e.clientY, 2);
+      idx++;
+      if (idx === deck.length) {
+        const prev = store.get(key);
+        if (prev == null || mistakes < prev) store.set(key, mistakes);
+        return setTimeout(() => doneCard(stage, mistakes === 0 ? "Fully<em> staffed.</em>" : `${mistakes}<em> mix-up${mistakes > 1 ? "s" : ""}</em>`,
+          mistakes === 0 ? "Six agents, every job on the right desk." : "Planning writes, checks and shapes the idea; production makes and reviews it.",
+          () => gameSort(stage, g, key)), 400);
+      }
+      card.classList.add("fly");
+      setTimeout(show, 260);
+    } else {
+      mistakes++;
+      $("#sm", stage).textContent = mistakes;
+      d.classList.remove("miss"); void d.offsetWidth; d.classList.add("miss");
+      hint.textContent = `Not the ${g.bins[b].name}. Try another desk.`;
+    }
+  }));
+}
+
+// "spot": flag the faulty lines in a document, then submit for the verdict.
+function gameSpot(stage, g, key) {
+  const best = store.get(key);
+  const lines = g.lines.map((l, i) => ({ ...l, i }));
+  stage.innerHTML = head(g, `<span>Lines <b>${lines.length}</b></span><span>Best <b>${best == null ? "—" : best + "/" + lines.length}</b></span>`) +
+    `<div class="stage-body"><div class="brief-doc">
+      <p class="brief-head pixel">${g.doc}</p>
+      <ol class="brief-lines">${lines.map(l => `<li><button class="brief-line" data-i="${l.i}" aria-pressed="false" data-cursor="Flag"><span class="flag pixel">Flag</span><span class="bt">${l.t}</span></button><p class="brief-why" hidden></p></li>`).join("")}</ol>
+      <div class="stage-actions"><button class="btn" id="spotGo" data-cursor="Submit">Submit verdict</button><span class="spot-count pixel">0 flagged</span></div>
+    </div></div>`;
+  const btns = $$(".brief-line", stage);
+  const count = () => $(".spot-count", stage).textContent = `${btns.filter(b => b.getAttribute("aria-pressed") === "true").length} flagged`;
+  btns.forEach(b => b.addEventListener("click", () => {
+    if (b.disabled) return;
+    const on = b.getAttribute("aria-pressed") !== "true";
+    b.setAttribute("aria-pressed", String(on));
+    count();
+  }));
+  $("#spotGo", stage).addEventListener("click", (e) => {
+    let right = 0;
+    btns.forEach(b => {
+      const l = g.lines[+b.dataset.i], flagged = b.getAttribute("aria-pressed") === "true";
+      const ok = flagged === l.bad;
+      if (ok) right++;
+      b.disabled = true;
+      b.classList.add(ok ? "is-right" : "is-wrong", l.bad ? "is-bad" : "is-fine");
+      b.querySelector(".flag").textContent = l.bad ? (flagged ? "Caught" : "Missed") : (flagged ? "False alarm" : "Fine");
+      const why = b.nextElementSibling; why.hidden = false; why.innerHTML = l.why;
+    });
+    const prev = store.get(key);
+    if (prev == null || right > prev) store.set(key, right);
+    burst(e.clientX, e.clientY, right >= lines.length - 1 ? 4 : 1);
+    const go = $("#spotGo", stage);
+    const verdict = document.createElement("div");
+    verdict.className = "verdict";
+    verdict.innerHTML = `<div class="big">${right}<em>/${lines.length}</em></div><p>${right === lines.length ? "A perfect validation. Vague goals, unproven claims and borrowed faces all caught." : "Check the notes under each line, then try again."}</p>`;
+    go.parentElement.replaceWith(verdict);
+    const again = document.createElement("div");
+    again.className = "stage-actions";
+    again.innerHTML = `<button class="btn" data-cursor="Again">Play again</button>`;
+    verdict.after(again);
+    again.querySelector("button").addEventListener("click", () => gameSpot(stage, g, key));
+    verdict.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "nearest" });
+  });
+}
+
+// "score": guess the AI reviewer's score, then reveal the lens breakdown.
+function gameScore(stage, g, key) {
+  let idx = 0, close = 0, off = 0;
+  const best = store.get(key);
+  const lensNames = ["BBH", "Ogilvy", "McCann"];
+  stage.innerHTML = head(g, `<span>Within 1 point <b id="gc">0</b>/${g.items.length}</span><span>Best <b>${best == null ? "—" : best + "/" + g.items.length}</b></span>`) +
+    `<div class="stage-body"><div class="scorer"></div></div>`;
+  const box = $(".scorer", stage);
+  const render = () => {
+    const it = g.items[idx];
+    box.innerHTML = `<p class="pixel" style="font-size:.66rem;color:var(--muted);margin:0 0 12px">Execution ${idx + 1} of ${g.items.length}</p>
+      <div class="exec"><div class="exec-chip ht"><span>${it.name}</span></div><div class="exec-body"><h4>${it.name}</h4><p>${it.desc}</p></div></div>
+      <p class="pixel guess-label">Your score</p>
+      <div class="pills">${Array.from({ length: 10 }, (_, i) => `<button class="pill" data-v="${i + 1}" data-cursor="Score">${i + 1}</button>`).join("")}</div>`;
+    $$(".pill", box).forEach(p => p.addEventListener("click", (e) => {
+      const guess = +p.dataset.v, diff = Math.abs(guess - it.score);
+      if (diff <= 1) { close++; burst(e.clientX, e.clientY, 3); }
+      off += diff;
+      $("#gc", stage).textContent = close;
+      $$(".pill", box).forEach(q => { q.disabled = true; if (q === p) q.classList.add("picked"); });
+      const res = document.createElement("div");
+      res.className = "reveal";
+      res.innerHTML = `<div class="reveal-top"><div class="big-score">${it.score.toFixed(1)}<em>/10</em></div>
+          <p>${diff <= 1 ? "<b>Close.</b>" : "<b>Off by " + diff.toFixed(1) + ".</b>"} You said ${guess}.</p></div>
+        <div class="lenses">${it.lenses.map((v, i) => `<span class="lens"><span class="pixel">${lensNames[i]}</span><b>${v}</b>/10</span>`).join("")}</div>
+        <p class="explain"><b>Strength:</b> ${it.strength}<br><b>Weakness:</b> ${it.weakness}</p>
+        <div class="stage-actions"><button class="btn" data-cursor="Next">${idx < g.items.length - 1 ? "Next execution" : "See my result"}</button></div>`;
+      box.appendChild(res);
+      const next = res.querySelector("button");
+      next.focus({ preventScroll: true });
+      next.addEventListener("click", () => {
+        idx++;
+        if (idx < g.items.length) return render();
+        const prev = store.get(key);
+        if (prev == null || close > prev) store.set(key, close);
+        doneCard(stage, `${close}<em>/${g.items.length}</em>`, `${g.lesson} You were off by ${(off / g.items.length).toFixed(1)} points on average.`, () => gameScore(stage, g, key));
+      });
+    }));
+  };
+  render();
 }
 
 /* ---------------- routing + page transitions ---------------- */
