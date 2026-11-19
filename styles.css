@@ -664,7 +664,7 @@ html.launch-lock .trail { z-index: 250; }
 .music-btn {
   position: relative; width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; overflow: hidden;
   color: var(--butter); border: 1.5px solid var(--cocoa);
-  background: radial-gradient(circle, var(--blush) 0 14%, var(--sceptre) 15% 100%);
+  background: var(--sceptre);
   box-shadow: 3px 3px 0 var(--cocoa); transition: transform .35s var(--pop), box-shadow .35s var(--ease-out);
 }
 /* record grooves, which turn while the song plays */
