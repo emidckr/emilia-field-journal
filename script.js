@@ -948,6 +948,8 @@ function initMusic() {
   // first click, tap or key anywhere (except the music button itself) brings the sound in
   const firstGesture = (e) => {
     if (started || userPaused) return;
+    // while the launch screen is up, only the polaroid starts the song
+    if (document.documentElement.classList.contains("is-launching")) return;
     if (e.target && e.target.closest && e.target.closest("#music")) return;
     startSound();
   };
