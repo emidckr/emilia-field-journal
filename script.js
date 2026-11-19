@@ -901,6 +901,81 @@ void main(){
   };
 }
 
+/* ---------------- music ---------------- */
+// "Blue Moon" by Zara Larsson, played from the official upload through YouTube's
+// embed player. Browsers only allow sound after the visitor clicks or presses a key,
+// so it starts muted on load and restarts with sound on the first interaction.
+// The volume follows scroll: full at the top, a whisper by the games.
+const MUSIC = { id: "N68WxtZ91s0", max: 70, min: 5 };
+function initMusic() {
+  const btn = $("#musicBtn"), box = $("#music");
+  if (!btn) return;
+  let player = null, ready = false, started = false, userPaused = false, vol = 0, target = MUSIC.max;
+  try { userPaused = localStorage.getItem("ej-music") === "off"; } catch {}
+  const setUI = (on) => {
+    box.classList.toggle("playing", on);
+    btn.setAttribute("aria-pressed", String(on));
+    btn.setAttribute("aria-label", on ? "Pause music" : "Play music");
+    btn.dataset.cursor = on ? "Pause" : "Play";
+  };
+  const remember = (v) => { try { localStorage.setItem("ej-music", v); } catch {} };
+
+  window.onYouTubeIframeAPIReady = () => {
+    player = new YT.Player("ytPlayer", {
+      videoId: MUSIC.id, width: 200, height: 200,
+      playerVars: { autoplay: 1, mute: 1, controls: 0, playsinline: 1, rel: 0, disablekb: 1, loop: 1, playlist: MUSIC.id },
+      events: {
+        onReady: () => { ready = true; player.mute(); player.setVolume(0); if (!userPaused) player.playVideo(); },
+        onStateChange: (e) => {
+          if (e.data === YT.PlayerState.ENDED) { player.seekTo(0, true); player.playVideo(); }
+          if (e.data === YT.PlayerState.PAUSED && started) setUI(false);
+          if (e.data === YT.PlayerState.PLAYING && started && !player.isMuted()) setUI(true);
+        }
+      }
+    });
+  };
+  const tag = document.createElement("script");
+  tag.src = "https://www.youtube.com/iframe_api";
+  document.head.appendChild(tag);
+
+  const startSound = () => {
+    if (!ready) return;
+    if (!started) { player.seekTo(0, true); started = true; vol = 0; player.setVolume(0); }
+    player.unMute();
+    player.playVideo();
+    setUI(true);
+  };
+  // first click, tap or key anywhere (except the music button itself) brings the sound in
+  const firstGesture = (e) => {
+    if (started || userPaused) return;
+    if (e.target && e.target.closest && e.target.closest("#music")) return;
+    startSound();
+  };
+  ["pointerdown", "keydown", "touchend"].forEach(t => addEventListener(t, firstGesture, { capture: true, passive: true }));
+
+  btn.addEventListener("click", () => {
+    if (!ready) return;
+    if (box.classList.contains("playing")) { player.pauseVideo(); userPaused = true; remember("off"); setUI(false); }
+    else { userPaused = false; remember("on"); startSound(); }
+  });
+
+  // scroll fade: from full volume at the top down to a whisper where the games (or the session list) begin
+  const computeTarget = () => {
+    const page = $(".page:not([hidden])");
+    const stopEl = page && ($(".games", page) || $("#sessions", page));
+    const stop = stopEl ? stopEl.getBoundingClientRect().top + scrollY : document.documentElement.scrollHeight;
+    const span = Math.max(1, stop - innerHeight * .4);
+    const p = Math.min(1, Math.max(0, scrollY / span));
+    target = MUSIC.min + (MUSIC.max - MUSIC.min) * Math.pow(1 - p, 1.5);
+  };
+  setInterval(() => {
+    if (!ready || !started || userPaused || player.isMuted()) return;
+    computeTarget();
+    vol += (target - vol) * .12;
+    player.setVolume(Math.round(vol));
+  }, 90);
+}
+
 /* ---------------- boot ---------------- */
 buildNav();
 buildFan();
@@ -908,6 +983,7 @@ buildRows();
 buildMarquee();
 SESSIONS.forEach(buildSession);
 initWater();
+initMusic();
 initCursor();
 initRotator();
 initRowPreview();

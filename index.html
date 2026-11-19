@@ -104,6 +104,16 @@
 
   <div class="row-preview" id="rowPreview" aria-hidden="true"><div class="row-preview-chip"></div><span class="pixel"></span></div>
 
+  <!-- music: official YouTube upload, play/pause in the corner, fades out as you scroll -->
+  <div class="music" id="music">
+    <button class="music-btn" id="musicBtn" type="button" aria-pressed="false" aria-label="Play music" data-cursor="Music">
+      <svg class="ic ic-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>
+      <svg class="ic ic-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.6v14H7zM13.4 5H17v14h-3.6z" fill="currentColor"/></svg>
+    </button>
+    <div class="music-label pixel" aria-hidden="true"><span class="eq"><i></i><i></i><i></i></span><span>Blue Moon · Zara Larsson</span></div>
+    <div class="yt-holder" aria-hidden="true"><div id="ytPlayer"></div></div>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>

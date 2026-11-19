@@ -653,3 +653,46 @@ a.row:hover .t { transform: translateX(14px); font-style: italic; }
   .keeper:last-child:nth-child(3n + 1) { grid-column: auto; border-top: 0; padding-top: 4px; }
   .keeper:last-child:nth-child(2n + 1) { grid-column: 1 / -1; border-left: 0; padding-left: 0; }
 }
+
+/* ---------- music: vinyl play/pause in the bottom-right corner ---------- */
+.music {
+  position: fixed; z-index: 120; right: calc(18px + env(safe-area-inset-right, 0px)); bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  display: flex; flex-direction: row-reverse; align-items: center; gap: 10px; pointer-events: none;
+}
+.music > * { pointer-events: auto; }
+.music-btn {
+  position: relative; width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; overflow: hidden;
+  color: var(--butter); border: 1.5px solid var(--cocoa);
+  background: radial-gradient(circle, var(--blush) 0 14%, var(--sceptre) 15% 100%);
+  box-shadow: 3px 3px 0 var(--cocoa); transition: transform .35s var(--pop), box-shadow .35s var(--ease-out);
+}
+/* record grooves, which turn while the song plays */
+.music-btn::before {
+  content: ""; position: absolute; inset: 4px; border-radius: 50%;
+  background: repeating-radial-gradient(circle, transparent 0 3px, color-mix(in srgb, var(--butter) 14%, transparent) 3px 3.6px);
+  -webkit-mask: radial-gradient(circle, transparent 0 30%, #000 31%); mask: radial-gradient(circle, transparent 0 30%, #000 31%);
+}
+.music.playing .music-btn::before { animation: spin 3.2s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.music-btn:hover { transform: translate(-2px, -2px) rotate(-6deg); box-shadow: 5px 5px 0 var(--cocoa); }
+.music-btn .ic { position: relative; z-index: 1; width: 22px; height: 22px; filter: drop-shadow(1px 1px 0 var(--cocoa)); }
+.music-btn .ic-pause { display: none; }
+.music.playing .ic-play { display: none; }
+.music.playing .ic-pause { display: block; }
+.music-label {
+  display: inline-flex; align-items: center; gap: 8px; font-size: .56rem; white-space: nowrap;
+  padding: 7px 12px; border-radius: 999px; background: var(--butter); color: var(--cocoa); border: 1.5px solid var(--cocoa);
+  box-shadow: 2px 2px 0 var(--cocoa); transform: rotate(-2deg);
+}
+.eq { display: inline-flex; align-items: flex-end; gap: 2px; height: 10px; }
+.eq i { width: 2px; height: 3px; background: var(--sceptre); }
+.music.playing .eq i { animation: eq .9s ease-in-out infinite alternate; }
+.music.playing .eq i:nth-child(2) { animation-delay: .25s; }
+.music.playing .eq i:nth-child(3) { animation-delay: .5s; }
+@keyframes eq { from { height: 2px; } to { height: 10px; } }
+/* the YouTube player itself stays loaded but off-screen */
+.yt-holder { position: fixed; left: -400px; bottom: 0; width: 200px; height: 200px; opacity: 0; pointer-events: none; overflow: hidden; }
+@media (max-width: 600px) {
+  .music-btn { width: 52px; height: 52px; }
+  .music-label { display: none; }
+}
