@@ -696,3 +696,53 @@ a.row:hover .t { transform: translateX(14px); font-style: italic; }
   .music-btn { width: 52px; height: 52px; }
   .music-label { display: none; }
 }
+
+/* ---------- launch screen ---------- */
+html.launch-lock, html.launch-lock body { overflow: hidden; }
+/* only the moving satin shows behind the launch screen; the site appears as it lifts away */
+html.is-launching main, html.is-launching .nav, html.is-launching .mast-top, html.is-launching .footer, html.is-launching .edge { visibility: hidden; }
+html.is-launching .music { opacity: 0; pointer-events: none; }
+.music { transition: opacity .6s var(--ease-out); }
+.launch {
+  position: fixed; inset: 0; z-index: 200; display: grid; grid-template-rows: auto 1fr auto; justify-items: center;
+  padding: calc(22px + env(safe-area-inset-top, 0px)) 16px calc(22px + env(safe-area-inset-bottom, 0px));
+  color: var(--butter); background: color-mix(in srgb, var(--cocoa) 30%, transparent);
+  transition: transform 1s var(--ease) .12s;
+}
+.launch-top { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 28px; margin: 0; font-size: .6rem; }
+.launch-mid { display: grid; justify-items: center; align-content: center; gap: clamp(18px, 3vh, 34px); }
+.launch-title { font-size: clamp(2.6rem, 6vw, 5rem); text-align: center; color: var(--butter); text-shadow: .02em .015em 0 color-mix(in srgb, var(--raspberry) 45%, transparent), 0 .05em .5em color-mix(in srgb, var(--cocoa) 50%, transparent); }
+.launch-title em { color: var(--blush); }
+.launch-polaroid {
+  position: relative; display: block; width: min(80vw, 460px); padding: 14px 14px 72px; border: 0; cursor: pointer;
+  background: var(--white); color: var(--cocoa); text-align: left;
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--cocoa) 12%, transparent), 0 34px 60px -26px color-mix(in srgb, var(--cocoa) 95%, transparent);
+  transform: rotate(-4deg); transition: transform .7s var(--pop), box-shadow .5s var(--ease-out);
+  animation: polaroidIn 1.1s var(--pop) backwards;
+}
+@keyframes polaroidIn { from { transform: translateY(-36px) rotate(-11deg); } to { transform: rotate(-4deg); } }
+.launch-polaroid:hover, .launch-polaroid:focus-visible { transform: rotate(0deg) translateY(-8px) scale(1.03); box-shadow: 0 2px 0 color-mix(in srgb, var(--cocoa) 12%, transparent), 0 44px 70px -26px color-mix(in srgb, var(--cocoa) 95%, transparent); }
+.launch-polaroid:focus-visible { outline: 2px solid var(--butter); outline-offset: 8px; }
+.launch-polaroid .tape { top: -14px; width: 92px; margin-left: -46px; }
+.launch-photo { display: block; position: relative; overflow: hidden; background: var(--cocoa); }
+.launch-photo img { display: block; width: 100%; height: auto; aspect-ratio: 752 / 501; object-fit: cover; filter: contrast(1.04) saturate(.95); }
+.launch-photo::after { content: ""; position: absolute; inset: 0; background-image: radial-gradient(color-mix(in srgb, var(--cocoa) 18%, transparent) 30%, transparent 34%); background-size: 5px 5px; mix-blend-mode: multiply; pointer-events: none; }
+.launch-caption { position: absolute; left: 18px; right: 66px; bottom: 16px; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.launch-caption em { font-family: var(--serif); font-size: clamp(1.7rem, 3.4vw, 2.3rem); line-height: 1; color: var(--sceptre); }
+.launch-caption .pixel { font-size: .56rem; color: var(--muted); }
+.launch-badge {
+  position: absolute; bottom: -24px; right: -24px; width: 72px; height: 72px; border-radius: 50%; display: grid; place-items: center;
+  color: var(--butter); background: var(--sceptre); border: 1.5px solid var(--cocoa); box-shadow: 3px 3px 0 var(--cocoa);
+  transform: rotate(10deg); animation: badgePulse 2.4s var(--ease) infinite;
+}
+.launch-badge::before { content: ""; position: absolute; inset: 5px; border-radius: 50%; border: 1px dashed color-mix(in srgb, var(--butter) 55%, transparent); }
+.launch-badge svg { display: block; width: 30px; height: 30px; margin-left: 4px; }
+@keyframes badgePulse { 0%, 100% { transform: rotate(10deg) scale(1); } 50% { transform: rotate(10deg) scale(1.08); } }
+.launch-foot { margin: 0; font-size: .6rem; opacity: .85; }
+/* leaving: the polaroid straightens, then the whole screen lifts away */
+.launch.leaving { transform: translateY(-104%); pointer-events: none; }
+.launch.leaving .launch-polaroid { transform: rotate(0deg) scale(1.06); animation: none; }
+@media (max-width: 600px) {
+  .launch-badge { width: 60px; height: 60px; bottom: -18px; right: -12px; }
+  .launch-polaroid { padding-bottom: 64px; }
+}

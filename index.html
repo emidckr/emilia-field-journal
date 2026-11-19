@@ -14,6 +14,21 @@
   <!-- animated satin background -->
   <div class="satin" aria-hidden="true"><div class="satin-a"></div><div class="satin-b"></div></div>
 
+  <!-- launch screen: the polaroid is the way in, and starts the music -->
+  <div class="launch" id="launch" role="dialog" aria-modal="true" aria-labelledby="launchTitle">
+    <p class="launch-top pixel"><span>Emilia's Field Journal</span><span>Issue #01</span><span>Group D</span></p>
+    <div class="launch-mid">
+      <h1 class="launch-title display" id="launchTitle">Welcome to the <em>journal.</em></h1>
+      <button class="launch-polaroid" id="launchBtn" type="button" aria-label="Enter the site and play Blue Moon by Zara Larsson" data-cursor="Play">
+        <span class="tape" aria-hidden="true"></span>
+        <span class="launch-photo"><img src="assets/launch/like-its-hard.jpg" alt="Elle Woods in Legally Blonde saying: What, like it's hard?" width="752" height="501"></span>
+        <span class="launch-caption"><em>Press play.</em><span class="pixel">Tap the polaroid</span></span>
+        <span class="launch-badge" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></span>
+      </button>
+    </div>
+    <p class="launch-foot pixel">Sound on · Blue Moon · Zara Larsson</p>
+  </div>
+
   <!-- custom cursor + sticker trail (script.js) -->
   <div class="cursor" aria-hidden="true"><div class="cursor-ring"><span class="cursor-label"></span></div><div class="cursor-dot"></div></div>
   <div class="trail" aria-hidden="true"></div>

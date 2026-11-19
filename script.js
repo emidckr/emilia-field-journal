@@ -910,7 +910,7 @@ const MUSIC = { id: "N68WxtZ91s0", max: 70, min: 5 };
 function initMusic() {
   const btn = $("#musicBtn"), box = $("#music");
   if (!btn) return;
-  let player = null, ready = false, started = false, userPaused = false, vol = 0, target = MUSIC.max;
+  let player = null, ready = false, started = false, userPaused = false, vol = 0, target = MUSIC.max, pending = false;
   try { userPaused = localStorage.getItem("ej-music") === "off"; } catch {}
   const setUI = (on) => {
     box.classList.toggle("playing", on);
@@ -925,7 +925,7 @@ function initMusic() {
       videoId: MUSIC.id, width: 200, height: 200,
       playerVars: { autoplay: 1, mute: 1, controls: 0, playsinline: 1, rel: 0, disablekb: 1, loop: 1, playlist: MUSIC.id },
       events: {
-        onReady: () => { ready = true; player.mute(); player.setVolume(0); if (!userPaused) player.playVideo(); },
+        onReady: () => { ready = true; player.mute(); player.setVolume(0); if (pending) startSound(); else if (!userPaused) player.playVideo(); },
         onStateChange: (e) => {
           if (e.data === YT.PlayerState.ENDED) { player.seekTo(0, true); player.playVideo(); }
           if (e.data === YT.PlayerState.PAUSED && started) setUI(false);
@@ -968,12 +968,48 @@ function initMusic() {
     const p = Math.min(1, Math.max(0, scrollY / span));
     target = MUSIC.min + (MUSIC.max - MUSIC.min) * Math.pow(1 - p, 1.5);
   };
+  // used by the launch screen: always start the song, even if it was paused on a past visit
+  const play = () => {
+    userPaused = false; remember("on");
+    if (ready) startSound(); else pending = true;
+  };
   setInterval(() => {
     if (!ready || !started || userPaused || player.isMuted()) return;
     computeTarget();
     vol += (target - vol) * .12;
     player.setVolume(Math.round(vol));
   }, 90);
+  return { play };
+}
+
+/* ---------------- launch screen ---------------- */
+// Shown on every visit before the site. The polaroid is the button: it starts
+// "Blue Moon" and lifts the screen away to reveal whichever page was asked for.
+function initLaunch(music) {
+  const el = $("#launch"), btn = $("#launchBtn");
+  if (!el || !btn) return;
+  document.documentElement.classList.add("is-launching", "launch-lock");
+  btn.focus({ preventScroll: true });
+  let gone = false;
+  btn.addEventListener("click", (e) => {
+    if (gone) return;
+    gone = true;
+    const viaKeyboard = e.detail === 0;
+    if (music) music.play();
+    burst(e.clientX || innerWidth / 2, e.clientY || innerHeight / 2, 4);
+    el.classList.add("leaving");
+    document.documentElement.classList.remove("is-launching");
+    const finish = () => {
+      el.remove();
+      document.documentElement.classList.remove("launch-lock");
+      const page = $(".page:not([hidden])");
+      if (page) { page.classList.remove("is-entering"); void page.offsetWidth; page.classList.add("is-entering"); }
+      // keyboard users land on the first link; mouse and touch users get no focus ring
+      const first = $(".nav a");
+      if (first && viaKeyboard) first.focus({ preventScroll: true });
+    };
+    setTimeout(finish, reduceMotion ? 0 : 1050);
+  });
 }
 
 /* ---------------- boot ---------------- */
@@ -983,7 +1019,7 @@ buildRows();
 buildMarquee();
 SESSIONS.forEach(buildSession);
 initWater();
-initMusic();
+initLaunch(initMusic());
 initCursor();
 initRotator();
 initRowPreview();
